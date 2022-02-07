@@ -122,6 +122,7 @@
                         <tr>
                             <td>Evento</td>
                             <td>Ticket</td>
+			    <td>Acento</td>
                             <td>Linha</td>
                             <td>Coluna</td>
                             <td>Status</td>
@@ -241,7 +242,7 @@ socket.on('checkin', function(data) {
 });
 
 socket.on('cadeira', function(data) {
-    $('#cadeira_tempo_real').append("<tr><td>"+data.numeroUnico_evento+"</td><td>"+data.numeroUnico_ticket+"</td><td>"+data.linha+"</td><td>"+data.coluna+"</td><td>"+data.status+"</td><td>"+data.numeroUnico_pai+"</td></tr>");
+    $('#cadeira_tempo_real').append("<tr><td>"+data.numeroUnico_evento+"</td><td>"+data.numeroUnico_ticket+"</td><td>"+data.label+"</td><td>"+data.linha+"</td><td>"+data.coluna+"</td><td>"+data.status+"</td><td>"+data.numeroUnico_pai+"</td></tr>");
 });
 
 socket.on('rastreamento', function(data) {
