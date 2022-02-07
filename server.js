@@ -1,6 +1,5 @@
 // app.js
 var express = require('express');
-var cors = require('cors');
 var app = express();
 var server = require('http').createServer(app);
 
