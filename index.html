@@ -162,7 +162,7 @@
     </body>
 </html>
 <script>
-var socket = io.connect();
+var socket = io.connect('https://socket-prod.yeapps.com.br/', {secure: true,    rejectUnauthorized: false});
 
 var acessosAr = [];
 
