@@ -1,0 +1,19 @@
+{
+  "name": "socket-padrao",
+  "description": "Socket simples",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">= 12.0.0"
+  },
+  "author": "SAGUARO Comunicação",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jquery": "^3.4.1",
+    "socket.io": "^2.2.0"
+  }
+}
