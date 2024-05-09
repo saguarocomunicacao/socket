@@ -163,7 +163,7 @@
     </body>
 </html>
 <script>
-var socket = io.connect('https://socket-h4txb7ldsa-uc.a.run.app', {secure: true,    rejectUnauthorized: false});
+var socket = io.connect('https://socket-w7hmeyipkq-uc.a.run.app', {secure: true,    rejectUnauthorized: false});
 
 var acessosAr = [];
 
@@ -241,7 +241,7 @@ socket.on('checkin', function(data) {
     $('#checkin_tempo_real').append("<tr><td>"+cod_voucher_img+"</td><td>"+data.cod_voucher+"</td></tr>");
 });
 
-socket.on('cadeira', function(data) {
+socket.on('marca-cadeira', function(data) {
     $('#cadeira_tempo_real').append("<tr><td>"+data.numeroUnico_evento+"</td><td>"+data.numeroUnico_ticket+"</td><td>"+data.label+"</td><td>"+data.linha+"</td><td>"+data.coluna+"</td><td>"+data.status+"</td><td>"+data.numeroUnico_pai+"</td></tr>");
 });
 
