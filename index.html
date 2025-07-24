@@ -1,268 +1,73 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-br">
     <head>
-        <meta http-equiv="Access-Control-Allow-Origin" content="*">
-        <!-- BOOTSTRAP -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.css" />
+        <meta charset="UTF-8" />
+        <title>Mensagens WhatsApp</title>
+        <script src="https://cdn.socket.io/2.4.1/socket.io.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+            }
+            h1 {
+                margin-bottom: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th,
+            td {
+                padding: 8px 12px;
+                border: 1px solid #ccc;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+        </style>
     </head>
-    <body style="padding:10px;">
-        <div id="future" class="container" style="max-width:100% !important;">
-            <h1>Controle de ações em tempo real</h1>
+    <body>
+        <h1>Mensagens do WhatsApp (tempo real)</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Remetente</th>
+                    <th>Mensagem</th>
+                    <th>Data/Hora</th>
+                </tr>
+            </thead>
+            <tbody id="lista-mensagens"></tbody>
+        </table>
 
-            <nav>
-              <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <a class="nav-item nav-link active" id="menu-chat-tab" data-toggle="tab" href="#menu-chat" role="tab" aria-controls="menu-chat" aria-selected="true">Chat</a>
-                <a class="nav-item nav-link" id="menu-acessos-tab" data-toggle="tab" href="#menu-acessos" role="tab" aria-controls="menu-acessos" aria-selected="true">Acessos</a>
-                <a class="nav-item nav-link" id="menu-vendas-tab" data-toggle="tab" href="#menu-vendas" role="tab" aria-controls="menu-vendas" aria-selected="true">Vendas</a>
-                <a class="nav-item nav-link" id="menu-estornos-tab" data-toggle="tab" href="#menu-estornos" role="tab" aria-controls="menu-estornos" aria-selected="false">Estornos</a>
-                <a class="nav-item nav-link" id="menu-checkin-tab" data-toggle="tab" href="#menu-checkin" role="tab" aria-controls="menu-checkin" aria-selected="false">Checkin</a>
-                <a class="nav-item nav-link" id="menu-validar-tab" data-toggle="tab" href="#menu-validar" role="tab" aria-controls="menu-validar" aria-selected="true">Para validar</a>
-                <a class="nav-item nav-link" id="menu-cadeira-tab" data-toggle="tab" href="#menu-cadeira" role="tab" aria-controls="menu-cadeira" aria-selected="true">Cadeira</a>
-                <a class="nav-item nav-link" id="menu-rastreamento-tab" data-toggle="tab" href="#menu-rastreamento" role="tab" aria-controls="menu-rastreamento" aria-selected="true">Rastreamento</a>
-              </div>
-            </nav>
+        <script>
+            const socket = io.connect(
+                "https://socket-hypergestor.replit.app/",
+                {
+                    secure: true,
+                    rejectUnauthorized: false,
+                },
+            );
 
-            <div class="tab-content" id="nav-tabContent">
-              <div class="tab-pane fade show active" id="menu-chat" role="tabpanel" aria-labelledby="menu-chat-tab">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <td colspan="9" id="ultima_atualizacao"></td>
-                        </tr>
-                    </thead>
-                    <thead id="chat_tempo_real">
-                        <tr>
-                            <td>Usuário</td>
-                            <td>Msg</td>
-                        </tr>
-                    </thead>
-                </table>
-              </div>
-              <div class="tab-pane fade show" id="menu-acessos" role="tabpanel" aria-labelledby="menu-acessos-tab">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <td colspan="9" id="ultima_atualizacao"></td>
-                        </tr>
-                    </thead>
-                    <thead id="acessos_tempo_real">
-                        <tr>
-                            <td>Empresa</td>
-                            <td>Total</td>
-                            <td>Inicial</td>
-                            <td>Eventos</td>
-                            <td>Evento</td>
-                            <td>Cadastro</td>
-                            <td>Confirmação</td>
-                            <td>Checkout</td>
-                            <td>Em Análise</td>
-                        </tr>
-                    </thead>
-                </table>
-              </div>
-              <div class="tab-pane fade show" id="menu-vendas" role="tabpanel" aria-labelledby="menu-vendas-tab">
-                <table class="table table-striped table-bordered" id="vendas_tempo_real">
-                    <thead>
-                        <tr>
-                            <td>#ID</td>
-                            <td colspan="2">Voucher</td>
-                            <td>Evento</td>
-                            <td>Ticket</td>
-                            <td>Lote</td>
-                            <td>Nome</td>
-                            <td>CPF</td>
-                            <td>E-mail</td>
-                            <td>Stat</td>
-                            <td>Data</td>
-                        </tr>
-                    </thead>
-                </table>
-              </div>
-              <div class="tab-pane fade" id="menu-estornos" role="tabpanel" aria-labelledby="menu-estornos-tab">
-                <table class="table table-striped table-bordered" id="estornos_tempo_real">
-                    <thead>
-                        <tr>
-                            <td>#ID</td>
-                            <td>Evento</td>
-                            <td>Ticket</td>
-                            <td>Lote</td>
-                            <td>Nome</td>
-                            <td>CPF</td>
-                            <td>E-mail</td>
-                            <td>Stat</td>
-                        </tr>
-                    </thead>
-                </table>
-              </div>
-              <div class="tab-pane fade" id="menu-checkin" role="tabpanel" aria-labelledby="menu-checkin-tab">
-                <table class="table table-striped table-bordered" id="checkin_tempo_real">
-                    <thead>
-                        <tr>
-                            <td>QRCode</td>
-                            <td>Cod Voucher</td>
-                        </tr>
-                    </thead>
-                    </thead>
-                </table>
-              </div>
-              <div class="tab-pane fade" id="menu-validar" role="tabpanel" aria-labelledby="menu-validar-tab">
-                <table class="table table-striped table-bordered" id="validar_tempo_real">
-                    <thead>
-                        <tr>
-                            <td>QRCode</td>
-                            <td>Cod Voucher</td>
-                        </tr>
-                    </thead>
-                </table>
-              </div>
-              <div class="tab-pane fade" id="menu-cadeira" role="tabpanel" aria-labelledby="menu-cadeira-tab">
-                <table class="table table-striped table-bordered" id="cadeira_tempo_real">
-                    <thead>
-                        <tr>
-                            <td>Evento</td>
-                            <td>Ticket</td>
-			    <td>Acento</td>
-                            <td>Linha</td>
-                            <td>Coluna</td>
-                            <td>Status</td>
-                            <td>Hash Carrinho</td>
-                        </tr>
-                    </thead>
-                    </thead>
-                </table>
-              </div>
-              <div class="tab-pane fade" id="menu-rastreamento" role="tabpanel" aria-labelledby="menu-rastreamento-tab">
-                <table class="table table-striped table-bordered" id="rastreamento_tempo_real">
-                    <thead>
-                        <tr>
-                            <td>Pedido</td>
-                            <td>Latitude</td>
-                            <td>Longitude</td>
-                        </tr>
-                    </thead>
-                    </thead>
-                </table>
-              </div>
-            </div>
+            socket.on("connect", () => {
+                console.log("🟢 Conectado ao servidor WebSocket");
+            });
 
-        </div>
-        <form id="form" id="chat_form" style="display:block;">
-            <input id="params_input" type="hidden">
-            <input id="broad_input" value="broadcast" type="hidden">
-            <input id="user_input" placeholder="Digite seu nome" type="text">
-            <input id="chat_input" type="text" placeholder="Digite sua mensagem">
-            <input type="submit" value="Enviar">
-        </form>
-        <script src="/jquery/dist/jquery.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
+            socket.on("mensagem-whatsapp", function (data) {
+                console.log("📥 Recebido:", data);
 
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.js"></script>
+                const linha = document.createElement("tr");
 
+                linha.innerHTML = `
+        <td>${data.from || "Desconhecido"}</td>
+        <td>${data.mensagem || "-"}</td>
+        <td>${data.timestamp || "-"}</td>
+      `;
+
+                document.getElementById("lista-mensagens").prepend(linha);
+            });
+        </script>
     </body>
 </html>
-<script>
-var socket = io.connect('https://socket-w7hmeyipkq-uc.a.run.app', {secure: true,    rejectUnauthorized: false});
-
-var acessosAr = [];
-
-socket.on('connect', function(data) {
-	socket.emit('join', 'Hello World from client');
-});
-
-socket.on('site_conectado', function(data) {
-	console.log('['+data.msg+']');
-});
-
-socket.on('acessos', function(data) {
-	$('#ultima_atualizacao').html("<b>Atualização em:</b> "+data.data+"");
-	$('#acessos_tempo_real').html("<tr><td>Empresa</td><td>Total</td><td>Inicial</td><td>Eventos</td><td>Evento</td><td>Cadastro</td><td>Confirmação</td><td>Checkout</td><td>Em Análise</td></tr>");
-	for (var j=0 in data.acessos) {
-		$('#acessos_tempo_real').append("<tr><td>"+
-												 data.acessos[j].empresa+"</td><td>"+
-												 data.acessos[j].qtd+"</td><td>"+
-												 data.acessos[j].qtd_inicial+"</td><td>"+
-												 data.acessos[j].qtd_eventos+"</td><td>"+
-												 data.acessos[j].qtd_evento+"</td><td>"+
-												 data.acessos[j].qtd_cadastro+"</td><td>"+
-												 data.acessos[j].qtd_confirmacao+"</td><td>"+
-												 data.acessos[j].qtd_checkout+"</td><td>"+
-												 data.acessos[j].qtd_analise+"</td>"
-												 +"</tr>");
-	}
-});
-
-socket.on('broadcast', function(data) {
-    $('#chat_tempo_real').append("<tr><td>"+
-									 data.user+"</td><td>"+
-									 data.msg+"</td>"
-									 +"</tr>");
-});
-
-socket.on('vendas', function(data) {
-	var cod_voucher_img = "<a data-fancybox=\"gallery\" href=\"https://www.yeapps.com.br/admin/app-webservice/qrcode.php?cod_voucher="+data.cod_voucher+"\"><img style=\"-webkit-user-select: none;height:100px;\" src=\"https://www.yeapps.com.br/admin/app-webservice/qrcode.php?cod_voucher="+data.cod_voucher+"\"></a>";
-	if($.trim(data.nome)=="") {
-		nome_set = data.usuario_ben_nome;
-	} else {
-		nome_set = data.nome;
-	}
-	if($.trim(data.email)=="") {
-		email_set = data.usuario_ben_email;
-	} else {
-		email_set = data.email;
-	}
-    $('#vendas_tempo_real').append("<tr class='"+data.classe_tabela+"'><td>"+
-	                                             data.id+"</td><td>"+
-												 data.cod_voucher+"</td><td>"+
-												 cod_voucher_img+"</td><td>"+
-												 data.eventos_nome+"</td><td>"+
-												 data.ticket_nome+"</td><td>"+
-												 data.lote_lote+"</td><td>"+
-												 nome_set+"</td><td>"+
-												 data.cpf+"</td><td>"+
-												 email_set+"</td><td>"+
-												 data.stat+"</td><td>"+
-												 data.dataPagamento+"</td>"
-												 +"</tr>");
-});
-
-socket.on('validar', function(data) {
-	var cod_voucher_img = "<a data-fancybox=\"gallery\" href=\"https://www.yeapps.com.br/admin/app-webservice/qrcode.php?cod_voucher="+data.cod_voucher+"\"><img style=\"-webkit-user-select: none;height:100px;\" src=\"https://www.yeapps.com.br/admin/app-webservice/qrcode.php?cod_voucher="+data.cod_voucher+"\"></a>";
-    $('#validar_tempo_real').append("<tr><td>"+cod_voucher_img+"</td><td>"+data.cod_voucher+"</td></tr>");
-});
-
-socket.on('estornos', function(data) {
-    $('#estornos_tempo_real').append("<tr class='"+data.classe_tabela+"'><td>"+data.id+"</td><td>"+data.eventos_nome+"</td><td>"+data.ticket_nome+"</td><td>"+data.lote_lote+"</td><td>"+data.nome+"</td><td>"+data.cpf+"</td><td>"+data.email+"</td><td>"+data.stat+"</td></tr>");
-});
-
-socket.on('checkin', function(data) {
-	var cod_voucher_img = "<a data-fancybox=\"gallery\" href=\"https://www.yeapps.com.br/admin/app-webservice/qrcode.php?cod_voucher="+data.cod_voucher+"\"><img style=\"-webkit-user-select: none;height:100px;\" src=\"https://www.yeapps.com.br/admin/app-webservice/qrcode.php?cod_voucher="+data.cod_voucher+"\"></a>";
-    $('#checkin_tempo_real').append("<tr><td>"+cod_voucher_img+"</td><td>"+data.cod_voucher+"</td></tr>");
-});
-
-socket.on('marca-cadeira', function(data) {
-    $('#cadeira_tempo_real').append("<tr><td>"+data.numeroUnico_evento+"</td><td>"+data.numeroUnico_ticket+"</td><td>"+data.label+"</td><td>"+data.linha+"</td><td>"+data.coluna+"</td><td>"+data.status+"</td><td>"+data.numeroUnico_pai+"</td></tr>");
-});
-
-socket.on('rastreamento', function(data) {
-    $('#rastreamento_tempo_real').append("<tr><td>"+data.numeroUnico_pedido+"</td><td>"+data.latitude_entregador+"</td><td>"+data.longitude_entregador+"</td></tr>");
-});
-
-$('form').submit(function(e){
-	e.preventDefault();
-	var userSet = $('#user_input').val();
-	var broadSet = $('#broad_input').val();
-	var messageSet = $('#chat_input').val();
-	var paramsSet = $('#params_input').val();
-	//$('#user_input').val("");
-	$('#broad_input').val("broadcast");
-	$('#chat_input').val("");
-	socket.emit('messages', {
-	  broad: broadSet,
-	  user: userSet,
-	  msg: messageSet,
-	  params: paramsSet
-	});
-});
-</script>
